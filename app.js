@@ -24,10 +24,42 @@ articleSchema = new mongoose.Schema ({
 
 const Article = mongoose.model('Article', articleSchema);
 
-app.get('/', (req, res) =>{
-    res.render('home');
-});
+app.route('/articles')
+
+    .get((req, res) =>{
+        Article.find({}, (err, articlesFound) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(articlesFound)
+            }
+        })
+    })
+
+    .post((req, res) => {
+        const newArticle = new Article({
+            title: req.body.title,
+            content: req.body.content
+        });
+        newArticle.save((err) => {
+            if (err) {
+                res.send(err);
+            } else {
+                res.send('Successfully added a new article.');
+            }
+        });
+    })
+
+    .delete((req, res) => {
+        Article.deleteMany({}, (err) => {
+            if (err) {
+                res.send(err);
+            } else {
+                res.send('Successfully deleted all articles.');
+            }
+        });
+    });
 
 app.listen(3000, () =>{
     console.log('Server started and listening on port 3000.');
-})
+});
