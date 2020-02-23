@@ -26,6 +26,8 @@ const Article = mongoose.model('Article', articleSchema);
 
 app.route('/articles')
 
+    ////////////////////////////// REQUESTS TARGETING ALL ARTICLES ////////////////////////////////
+
     .get((req, res) =>{
         Article.find({}, (err, articlesFound) => {
             if (err) {
@@ -59,6 +61,43 @@ app.route('/articles')
             }
         });
     });
+
+    ////////////////////////////// REQUESTS TARGETING A SPECIFIC ARTICLE //////////////////////////
+
+
+app.route('/articles/:articleTitle')
+
+    .get((req, res) => {
+
+        Article.findOne({title: req.params.articleTitle}, (err, articleFound) =>{
+            if (err) {
+                res.send(err);
+            } else {
+                res.send(articleFound);
+            }
+        });
+    })
+
+    .put((req, res) => {
+
+        Article.update(
+            { title: req.params.articleTitle },
+            { title: req.body.title, content: req.body.content },
+            { overwrite: true },
+            (err) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.send('Successfully updated article.');
+                }
+            });
+
+    })
+
+    .patch()
+
+    .delete();
+
 
 app.listen(3000, () =>{
     console.log('Server started and listening on port 3000.');
